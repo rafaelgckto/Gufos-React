@@ -18,6 +18,7 @@ class Evento extends Component {
         this.AtualizarEstadoData = this.AtualizarEstadoData.bind(this);
         this.AtualizarEstadoAcesso = this.AtualizarEstadoAcesso.bind(this);
         this.CadastrarEvento = this.CadastrarEvento.bind(this);
+        this.DeletarEvento = this.DeletarEvento.bind(this);
     }
 
     /*
@@ -66,6 +67,25 @@ class Evento extends Component {
         }).catch(erro => console.log(erro)).then(this.BuscarEventos());
     }
 
+    DeletarEvento = (id) => {
+        console.log("Excluindo");
+
+        fetch('http://localhost:5000/api/eventos' + id, {
+            method: 'DELETE',
+            headers: {
+                "Content-type": "application/json"
+            }
+        })
+            .then(resposta => resposta.json())
+            .then(resposta => {
+                console.log(resposta);
+                this.ListaAtualizada();
+                this.setState(() => ({ lista: this.state.lista }));
+            })
+            .catch(error => console.log(error))
+            .then(this.BuscarEventos);
+    }
+
     // Assim que a página for carregada, chama a função BuscarEventos()
     componentDidMount() {
         this.BuscarEventos();
@@ -98,6 +118,7 @@ class Evento extends Component {
                                         <th>Data</th>
                                         <th>Acesso Livre</th>
                                         <th>Tipo do Evento</th>
+                                        <th>Ação</th>
                                     </tr>
                                 </thead>
 
@@ -113,7 +134,10 @@ class Evento extends Component {
                                                     <td>{evento.titulo}</td>
                                                     <td>{evento.dataEvento}</td>
                                                     <td>{evento.acessoLivre ? "Público" : "Privado"}</td>
-                                                    {/* <td>{evento.categoria.titulo}</td> */}
+                                                    <td>{evento.categoria.titulo}</td>
+                                                    <td>
+                                                        <button type="submit" onClick={i => this.DeletarEvento(evento.eventoId)}>Excluir</button>
+                                                    </td>
                                                 </tr>
                                             )
                                         })
@@ -141,16 +165,16 @@ class Evento extends Component {
                                         placeholder="dd/MM/yyyy"
                                     />
                                     <select
-                                        value = {this.state.acessoLivre}
-                                        onChange = {this.AtualizarEstadoAcesso}
+                                        value={this.state.acessoLivre}
+                                        onChange={this.AtualizarEstadoAcesso}
                                         id="option__acessolivre">
                                         <option value="1">Publico</option>
                                         <option value="0">Privado</option>
                                     </select>
-                                    <select id="option__tipoevento">
+                                    <select
+                                        id="option__tipoevento">
                                         <option value="0">Tipo do Evento</option>
-                                        <option value="1">teste1</option>
-                                        {/* <option>{}</option> */}
+                                        <option value="1"></option>
                                     </select>
                                     <textarea
                                         rows="3"

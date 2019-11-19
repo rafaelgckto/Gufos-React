@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import '../App.css';
 import Rodape from '../componentes/Rodape';
+import { throwStatement } from '@babel/types';
 
 class Categoria extends Component {
     constructor(props) {
@@ -14,6 +15,7 @@ class Categoria extends Component {
         this.AtualizaEstadoTitulo = this.AtualizaEstadoTitulo.bind(this);
         this.BuscarCategorias = this.BuscarCategorias.bind(this);
         this.CadastrarCategoria = this.CadastrarCategoria.bind(this);
+        // this.DeletarCategoria = this.DeletarCategoria.bind(this);
     }
 
     /* 
@@ -42,11 +44,33 @@ class Categoria extends Component {
             headers: {
                 "Content-type": "application/json"
             }
-        }).then(resposta => {
-            if (resposta.status === 200) {
-                console.log("Categoria cadastrada com sucesso!");// Mensagem de sucesso
+        })
+            .then(resposta => {
+                if (resposta.status === 200) {
+                    console.log("Categoria cadastrada com sucesso!");// Mensagem de sucesso
+                }
+            })
+            .catch(erro => console.log(erro))
+            .then(this.BuscarCategorias);
+    }
+
+    DeletarCategoria = (id) => {
+        console.log("Excluindo");
+
+        fetch('http://localhost:5000/api/categorias/' + id, {
+            method: 'DELETE',
+            headers: {
+                "Content-type": "application/json"
             }
-        }).catch(erro => console.log(erro)).then(this.BuscarCategorias());
+        })
+            .then(resposta => resposta.json())
+            .then(resposta => {
+                console.log(resposta);
+                this.ListaAtualizada();
+                this.setState(() => ({ lista: this.state.lista }));
+            })
+            .catch(error => console.log(error))
+            .then(this.BuscarCategorias);
     }
 
     // Assim que a página for carregada, chama a função buscarCategoria
@@ -78,6 +102,7 @@ class Categoria extends Component {
                                         <tr>
                                             <th>#</th>
                                             <th>Título</th>
+                                            <th>Ação</th>
                                         </tr>
                                     </thead>
 
@@ -93,9 +118,12 @@ class Categoria extends Component {
                                                     <tr key={categoria.categoriaId}>
                                                         <td>{categoria.categoriaId}</td>
                                                         <td>{categoria.titulo}</td>
+                                                        <td>
+                                                            <button type="submit" onClick={i => this.DeletarCategoria(categoria.categoriaId)}>Excluir</button>
+                                                        </td>
                                                     </tr>
                                                 )
-                                            })
+                                            }.bind(this))
                                         }
 
                                     </tbody>
