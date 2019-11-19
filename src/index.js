@@ -11,6 +11,7 @@ import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';// Imp
 import Categoria from './pages/Categorias';// Importando a página categoria
 import Evento from './pages/Eventos';// Importando a página evento
 import Usuario from './pages/Usuarios';// Importando a página usuário
+import Login from './pages/Login';//Importando a página login
 import NotFound from './pages/NotFound';// Importando a página 404
 
 const Rotas = (
@@ -21,6 +22,7 @@ const Rotas = (
                 <Route path="/categoria" component={Categoria} />
                 <Route path="/evento" component={Evento} />
                 <Route path="/usuario" component={Usuario} />
+                <Route path="/login" component={Login} />
                 <Route component={NotFound} />
             </Switch>
         </div>
