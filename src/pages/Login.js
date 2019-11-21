@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
+import { parseJwt } from '../services/auth';
 import '../assets/css/login.css';
 
 class Login extends Component {
@@ -8,39 +9,61 @@ class Login extends Component {
         this.state = {
             email: "",
             senha: "",
-            erroMensagem: ""
+            erroMensagem: "",
+            isLoading: false
         }
     }
 
+    // Função que faz a chamada para a API para realizar o login
     EfetuaLogin(event) {
+        // Ignora o comportamento padrão do navegador
         event.preventDefault();
+
+        // Remove a frase de erro do state erroMensagem
+        this.setState({ erroMensagem: '' });
+
+        // Define que a requisição está em andamento
+        this.setState({ isLoading: true });
 
         // Primeiro parâmetro URL da requisição
         Axios.post('http://localhost:5000/api/login', {
             // Segundo parâmetro são os dados
             email: this.state.email,
             senha: this.state.senha
-        }).then(data => {
-            // Criando uma condição que analiza o status da requisição
-            if (data.status === 200) {
-                localStorage.setItem('usuario-gufos', data.data.token);
-                console.log("Meu token é " + data.data.token);
-            }
-        }).catch(erro => { // Criando um tratamento para o erro
-            this.setState({
-                erroMensagem: "E-mail ou senha inválidos!"
+        })
+            /* */
+            .then(data => {
+                // Criando uma condição que analiza o status da requisição
+                if (data.status === 200) {
+                    localStorage.setItem('usuario-gufos', data.data.token);
+                    console.log("Meu token é " + data.data.token);
+                    this.setState({ isLoading: false });
+
+                    console.log(parseJwt().Role);
+
+
+                    /* Verifica o tipo de usuário logado
+                       Caso seja administrador, redireciona para a página de Categorias */
+                    if (parseJwt().Role === "Administrador") {
+                        this.props.history.push('/categoria');
+                    }
+                    else {
+                        this.props.history.push('/evento');
+                    }
+                }
+            })
+            // Caso haja erro, define o state erroMensagem como 'E-mail ou senha inválidos'
+            // E também define que a requisição terminou
+            .catch(erro => {
+                this.setState({ erroMensagem: "E-mail ou senha inválidos!" });
+                this.setState({ isLoading: false });
             });
-        });
     }
 
     AtualizaStateCampo(event) {
-        // this.setState({
-        //     email: this.state.email
-        // });
+        // this.setState({ email: this.state.email });
 
-        this.setState({
-            [event.target.name]: event.target.value
-        });
+        this.setState({ [event.target.name]: event.target.value });
     }
 
     render() {
@@ -87,9 +110,25 @@ class Login extends Component {
                                     />
                                 </div>
                                 <div className="item">
-                                    <button type="submit" class="btn btn__login" id="btn__login">
-                                        Login
-                                    </button>
+                                    <p style={{ color: 'red' }}>{this.state.erroMensagem}</p>
+
+                                    {/* Verifica se a requisição está em andamento.
+                                        Se estiver, desabilita o click do button */}
+                                    {
+                                        this.state.isLoading === true &&
+                                        <button type="submit" class="btn btn__login" id="btn__login" disabled>
+                                            Loading...
+                                        </button>
+                                    }
+
+                                    {/* Verifica se a requisição está em andamento.
+                                        Se estiver, habilita o click do button */}
+                                    {
+                                        this.state.isLoading === false &&
+                                        <button type="submit" class="btn btn__login" id="btn__login">
+                                            Login
+                                        </button>
+                                    }
                                 </div>
                             </form>
                         </div>
