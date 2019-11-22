@@ -5,15 +5,21 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';// Importando a página categoria
+//
+import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
+import { usuarioAutenticado, parseJwt } from './services/auth';
 
+// Importar páginas
 import Categoria from './pages/Categorias';// Importando a página categoria
 import Evento from './pages/Eventos';// Importando a página evento
 import Usuario from './pages/Usuarios';// Importando a página usuário
 import Login from './pages/Login';//Importando a página login
 import NotFound from './pages/NotFound';// Importando a página 404
 
-import { usuarioAutenticado, parseJwt } from './services/auth'
+// Imports do MDB
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import 'bootstrap-css-only/css/bootstrap.min.css';
+import 'mdbreact/dist/css/mdb.css';
 
 const PermissaoAdm = ({ component: Component }) => (
     <Route
